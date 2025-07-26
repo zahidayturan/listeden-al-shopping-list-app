@@ -19,12 +19,12 @@ import java.util.Map;
 public class AuthController {
 
     private final UserService userService;
-    //private final AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
 
     @Autowired
-    public AuthController(UserService userService/*, AuthenticationManager authenticationManager*/) {
+    public AuthController(UserService userService, AuthenticationManager authenticationManager) {
         this.userService = userService;
-        //this.authenticationManager = authenticationManager;
+        this.authenticationManager = authenticationManager;
     }
 
     /**
@@ -54,11 +54,11 @@ public class AuthController {
         String username = loginRequest.get("username");
         String password = loginRequest.get("password");
 
-       /* Authentication authentication = authenticationManager.authenticate(
+        Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(username, password)
-        );*/
+        );
 
-        //SecurityContextHolder.getContext().setAuthentication(authentication);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
         // Burada JWT token oluşturma ve döndürme mantığı yer alacaktır.
         // Örnek: final String jwt = jwtTokenProvider.generateToken(authentication);
