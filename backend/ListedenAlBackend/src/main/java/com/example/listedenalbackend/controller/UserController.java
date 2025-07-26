@@ -5,10 +5,11 @@ import com.example.listedenalbackend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
@@ -21,36 +22,71 @@ public class UserController {
         this.userService = userService;
     }
 
+    /**
+     * Tüm kullanıcıları getirir. (Genellikle ADMIN yetkisi gereklidir).
+     * GET /api/users
+     * @return Tüm kullanıcıların listesiyle birlikte 200 OK yanıtı.
+     */
     @GetMapping
-    public List<User> getAllUsers() {
-        return userService.getAllUsers();
+    // @PreAuthorize("hasRole('ADMIN')") // Spring Security entegrasyonu sonrası
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> users = userService.getAllUsers();
+        users.forEach(user -> user.setPasswordHash(null)); // Güvenlik için
+        return ResponseEntity.ok(users);
     }
 
+    /**
+     * Belirli bir kullanıcıyı ID'sine göre getirir.
+     * GET /api/users/{id}
+     * @param id Kullanıcının ID'si.
+     * @param currentUser Mevcut oturum açmış kullanıcının detayları.
+     * @return Kullanıcı nesnesiyle birlikte 200 OK yanıtı.
+     * @throws IllegalArgumentException Kullanıcı bulunamazsa (GlobalExceptionHandler yakalar).
+     * @throws SecurityException Kullanıcı kendi profili değilse ve ADMIN yetkisi yoksa (GlobalExceptionHandler yakalar).
+     */
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        Optional<User> user = userService.getUserById(id);
-        return user.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    // @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id") // Spring Security entegrasyonu sonrası
+    public ResponseEntity<User> getUserById(@PathVariable Long id, @AuthenticationPrincipal UserDetails currentUser) {
+        // Servis katmanında yetki kontrolü yapılır.
+        User user = userService.getUserById(id)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + id));
+        user.setPasswordHash(null); // Hassas bilgiyi kaldırma
+        return ResponseEntity.ok(user);
     }
 
-    @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody User user) {
-        User createdUser = userService.createUser(user);
-        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
-    }
-
+    /**
+     * Belirli bir kullanıcıyı günceller.
+     * PUT /api/users/{id}
+     * @param id Güncellenecek kullanıcının ID'si.
+     * @param userDetails Güncellenmiş kullanıcı bilgileri.
+     * @param currentUser Mevcut oturum açmış kullanıcının detayları.
+     * @return Güncellenmiş kullanıcı nesnesiyle birlikte 200 OK yanıtı.
+     * @throws IllegalArgumentException Kullanıcı bulunamazsa veya username/email zaten kullanılıyorsa (GlobalExceptionHandler yakalar).
+     * @throws SecurityException Yetkisiz erişim varsa (GlobalExceptionHandler yakalar).
+     */
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User userDetails) {
+    // @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id") // Spring Security entegrasyonu sonrası
+    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User userDetails, @AuthenticationPrincipal UserDetails currentUser) {
+        // Servis katmanında yetki kontrolü yapılır.
         User updatedUser = userService.updateUser(id, userDetails);
-        if (updatedUser != null) {
-            return ResponseEntity.ok(updatedUser);
-        }
-        return ResponseEntity.notFound().build();
+        updatedUser.setPasswordHash(null);
+        return ResponseEntity.ok(updatedUser);
     }
 
+    /**
+     * Belirli bir kullanıcıyı siler.
+     * DELETE /api/users/{id}
+     * @param id Silinecek kullanıcının ID'si.
+     * @param currentUser Mevcut oturum açmış kullanıcının detayları.
+     * @return 204 No Content yanıtı.
+     * @throws IllegalArgumentException Kullanıcı bulunamazsa (GlobalExceptionHandler yakalar).
+     * @throws SecurityException Yetkisiz erişim varsa (GlobalExceptionHandler yakalar).
+     */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+    @ResponseStatus(HttpStatus.NO_CONTENT) // 204 No Content
+    // @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id") // Spring Security entegrasyonu sonrası
+    public void deleteUser(@PathVariable Long id, @AuthenticationPrincipal UserDetails currentUser) {
+        // Servis katmanında yetki kontrolü yapılır.
         userService.deleteUser(id);
-        return ResponseEntity.noContent().build();
     }
 }
