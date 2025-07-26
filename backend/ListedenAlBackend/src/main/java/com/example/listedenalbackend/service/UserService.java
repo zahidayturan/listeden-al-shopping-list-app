@@ -35,12 +35,12 @@ public class UserService {
     @Transactional
     public User updateUser(Long id, User userDetails) {
         Optional<User> userOptional = userRepository.findById(id);
-        /*if (userOptional.isPresent()) {
+        if (userOptional.isPresent()) {
             User existingUser = userOptional.get();
             existingUser.setUsername(userDetails.getUsername());
             existingUser.setEmail(userDetails.getEmail());
             return userRepository.save(existingUser);
-        }*/
+        }
         return null;
     }
 
