@@ -2,15 +2,22 @@ package com.example.listedenalbackend.controller;
 
 import com.example.listedenalbackend.model.User;
 import com.example.listedenalbackend.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+@Tag(name = "Kullanıcı Yönetimi", description = "Kullanıcıların kaydı, girişi ve profil yönetimi API'leri")
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -28,7 +35,7 @@ public class UserController {
      * @return Tüm kullanıcıların listesiyle birlikte 200 OK yanıtı.
      */
     @GetMapping
-    // @PreAuthorize("hasRole('ADMIN')") // Spring Security entegrasyonu sonrası
+    @PreAuthorize("hasRole('ADMIN')") // Spring Security entegrasyonu sonrası
     public ResponseEntity<List<User>> getAllUsers() {
         List<User> users = userService.getAllUsers();
         users.forEach(user -> user.setPasswordHash(null)); // Güvenlik için
@@ -44,6 +51,15 @@ public class UserController {
      * @throws IllegalArgumentException Kullanıcı bulunamazsa (GlobalExceptionHandler yakalar).
      * @throws SecurityException Kullanıcı kendi profili değilse ve ADMIN yetkisi yoksa (GlobalExceptionHandler yakalar).
      */
+    @Operation(summary = "Belirli bir kullanıcıyı ID'sine göre getirir",
+            description = "Kullanıcının kendi profilini veya ADMIN yetkisiyle başka bir kullanıcının profilini getirir.",
+            parameters = @Parameter(name = "id", description = "Kullanıcı ID'si", required = true),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Kullanıcı başarıyla getirildi",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = User.class))),
+                    @ApiResponse(responseCode = "404", description = "Kullanıcı bulunamadı"),
+                    @ApiResponse(responseCode = "403", description = "Bu kaynağa erişim yetkiniz yok")
+            })
     @GetMapping("/{id}")
     // @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id") // Spring Security entegrasyonu sonrası
     public ResponseEntity<User> getUserById(@PathVariable Long id, @AuthenticationPrincipal UserDetails currentUser) {
