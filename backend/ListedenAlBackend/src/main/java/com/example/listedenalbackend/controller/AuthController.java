@@ -1,6 +1,7 @@
 package com.example.listedenalbackend.controller;
 
 import com.example.listedenalbackend.model.User;
+import com.example.listedenalbackend.security.jwt.JwtTokenProvider;
 import com.example.listedenalbackend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,11 +21,13 @@ public class AuthController {
 
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
+    private final JwtTokenProvider tokenProvider; // JWTTokenProvider'ı enjekte ediyoruz
 
     @Autowired
-    public AuthController(UserService userService, AuthenticationManager authenticationManager) {
+    public AuthController(UserService userService, AuthenticationManager authenticationManager, JwtTokenProvider tokenProvider) {
         this.userService = userService;
         this.authenticationManager = authenticationManager;
+        this.tokenProvider = tokenProvider;
     }
 
     /**
@@ -37,7 +40,7 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<User> registerUser(@RequestBody User user) {
         User registeredUser = userService.createUser(user);
-        registeredUser.setPasswordHash(null); // Güvenlik için parola hash'ini göndermiyoruz
+        registeredUser.setPasswordHash(null);
         return new ResponseEntity<>(registeredUser, HttpStatus.CREATED);
     }
 
@@ -50,6 +53,7 @@ public class AuthController {
      * @throws org.springframework.security.core.AuthenticationException Geçersiz kimlik bilgileri ise (GlobalExceptionHandler yakalar).
      */
     @PostMapping("/login")
+    // Map yerine yukarıdaki gibi bir LoginRequest DTO'su kullanmak daha iyidir.
     public ResponseEntity<Map<String, String>> authenticateUser(@RequestBody Map<String, String> loginRequest) {
         String username = loginRequest.get("username");
         String password = loginRequest.get("password");
@@ -60,12 +64,18 @@ public class AuthController {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        // Burada JWT token oluşturma ve döndürme mantığı yer alacaktır.
-        // Örnek: final String jwt = jwtTokenProvider.generateToken(authentication);
-        // return ResponseEntity.ok(new JwtAuthResponse(jwt));
+        // JWT token oluştur ve döndür
+        String jwt = tokenProvider.generateToken(authentication);
 
         Map<String, String> response = new HashMap<>();
-        response.put("message", "User logged in successfully!");
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        response.put("accessToken", jwt);
+        response.put("tokenType", "Bearer");
+        response.put("username", username);
+        // İsterseniz burada kullanıcının rollerini de ekleyebilirsiniz.
+        // List<String> roles = authentication.getAuthorities().stream()
+        //        .map(GrantedAuthority::getAuthority).collect(Collectors.toList());
+        // response.put("roles", String.join(",", roles));
+
+        return ResponseEntity.ok(response);
     }
 }
