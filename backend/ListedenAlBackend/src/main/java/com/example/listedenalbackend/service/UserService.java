@@ -1,5 +1,6 @@
 package com.example.listedenalbackend.service;
 
+import com.example.listedenalbackend.dto.RegisterRequest;
 import com.example.listedenalbackend.model.User;
 import com.example.listedenalbackend.model.Role;
 import com.example.listedenalbackend.model.UserRole;
@@ -43,33 +44,35 @@ public class UserService {
     }
 
     @Transactional
-    public User createUser(User user) {
-        // Kullanıcı adı veya e-posta zaten var mı kontrol et
-        if (userRepository.existsByUsername(user.getUsername())) {
-            throw new IllegalArgumentException("Username already taken: " + user.getUsername());
-        }
-        if (userRepository.existsByEmail(user.getEmail())) {
-            throw new IllegalArgumentException("Email already registered: " + user.getEmail());
+    public User createUser(RegisterRequest newUser) {
+
+        if (newUser.getPassword() == null || newUser.getPassword().isEmpty()) {
+            throw new IllegalArgumentException("Password cannot be empty or null in RegisterRequest.");
         }
 
-        // Parolayı hash'le
-        user.setPasswordHash(passwordEncoder.encode(user.getPasswordHash()));
+        if (userRepository.existsByUsername(newUser.getUsername())) {
+            throw new IllegalArgumentException("Username already taken: " + newUser.getUsername());
+        }
+        if (userRepository.existsByEmail(newUser.getEmail())) {
+            throw new IllegalArgumentException("Email already registered: " + newUser.getEmail());
+        }
 
-        // Oluşturulma ve güncelleme zamanlarını ayarla (PrePersist'e rağmen manuel ayar tutarlı olabilir)
+        User user = new User();
+        user.setUsername(newUser.getUsername());
+        user.setEmail(newUser.getEmail());
+        user.setFirstName(newUser.getFirstName());
+        user.setLastName(newUser.getLastName());
+        user.setPasswordHash(passwordEncoder.encode(newUser.getPassword()));
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
 
-        // Kullanıcıyı kaydet
         User savedUser = userRepository.save(user);
 
-        // Varsayılan olarak ROLE_USER rolünü ata
         Role userRole = roleRepository.findByName("ROLE_USER")
-                .orElseGet(() -> roleRepository.save(new Role("ROLE_USER"))); // Eğer yoksa oluştur
+                .orElseGet(() -> roleRepository.save(new Role("ROLE_USER")));
         userRoleRepository.save(new UserRole(savedUser, userRole));
 
-        // Kullanıcının rollerini de yükle (eğer lazy fetch ise)
         savedUser.setUserRoles(userRoleRepository.findByUser(savedUser).stream().collect(Collectors.toSet()));
-
         return savedUser;
     }
 
@@ -97,7 +100,7 @@ public class UserService {
             }
             // Şifre güncellenmesi ayrı bir metotla yapılmalı veya burada hashlenmeli
             // existingUser.setPasswordHash(userDetails.getPasswordHash()); // Eğer yeni şifre verilirse hashlenmeli
-            existingUser.setUpdatedAt(LocalDateTime.now()); // PreUpdate de var ama manuel ayar güvenli
+            existingUser.setUpdatedAt(LocalDateTime.now());
 
             return userRepository.save(existingUser);
         }).orElseThrow(() -> new IllegalArgumentException("User not found with id: " + id));

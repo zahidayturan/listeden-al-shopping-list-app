@@ -1,4 +1,3 @@
-// com.example.listedenalbackend.dto.ErrorResponse.java
 package com.example.listedenalbackend.dto;
 
 import lombok.AllArgsConstructor;
@@ -14,5 +13,5 @@ public class ErrorResponse {
     private String error;
     private String message;
     private LocalDateTime timestamp;
-    private String path; // İsteğe bağlı
+    private String path;
 }

@@ -1,6 +1,5 @@
 package com.example.listedenalbackend.config;
 
-import com.example.listedenalbackend.security.CustomUserDetailsService;
 import com.example.listedenalbackend.security.jwt.JwtAuthenticationEntryPoint;
 import com.example.listedenalbackend.security.jwt.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,8 +51,6 @@ public class SecurityConfig {
 
                         .requestMatchers("/swagger-ui/**").permitAll()
                         .requestMatchers("/v3/api-docs/**").permitAll()
-                        .requestMatchers("/swagger-resources/**").permitAll()
-                        .requestMatchers("/swagger-ui.html").permitAll()
 
                         .anyRequest().authenticated()
                 );

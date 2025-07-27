@@ -28,7 +28,7 @@ public class User {
     private String email;
 
     @Column(nullable = false)
-    private String passwordHash; // Güvenli şifre saklama için hash
+    private String passwordHash;
 
     private String firstName;
     private String lastName;
@@ -40,9 +40,8 @@ public class User {
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    private Set<UserRole> userRoles = new HashSet<>(); // User ve Role arasındaki ilişki
+    private Set<UserRole> userRoles = new HashSet<>();
 
-    // PrePersist ve PreUpdate metotları, entity kaydedilmeden/güncellenmeden önce çalışır
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
