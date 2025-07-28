@@ -40,7 +40,7 @@ public class JwtTokenProvider {
                 .setSubject(userPrincipal.getUsername()) // Token'ın konusu (username)
                 .setIssuedAt(new Date()) // Oluşturulma zamanı
                 .setExpiration(expiryDate) // Bitiş zamanı
-                .signWith(key(), SignatureAlgorithm.HS512) // İmzalama algoritması ve anahtarı
+                .signWith(key(), SignatureAlgorithm.HS256) // İmzalama algoritması ve anahtarı
                 .compact(); // JWT'yi sıkıştır ve String olarak döndür
     }
 

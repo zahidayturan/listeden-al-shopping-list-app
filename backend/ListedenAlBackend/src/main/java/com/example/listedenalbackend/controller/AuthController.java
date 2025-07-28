@@ -67,9 +67,9 @@ public class AuthController {
             description = "Authenticates a user with provided username and password and returns a JWT access token."
     )
     @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> authenticateUser(@RequestBody LoginRequest loginDto) { // Use DTO here
-        String username = loginDto.getUsername();
-        String password = loginDto.getPassword();
+    public ResponseEntity<Map<String, String>> authenticateUser(@RequestBody LoginRequest loginRequest) { // Use DTO here
+        String username = loginRequest.getUsername();
+        String password = loginRequest.getPassword();
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(username, password)
