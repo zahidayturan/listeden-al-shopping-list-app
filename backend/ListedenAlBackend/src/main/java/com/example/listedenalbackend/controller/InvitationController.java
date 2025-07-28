@@ -31,9 +31,6 @@ public class InvitationController {
     /**
      * Kimliği doğrulanmış kullanıcının bekleyen tüm davetiyelerini getirir.
      * GET /api/invitations/pending
-     * @param currentUserDetails Mevcut oturum açmış kullanıcının güvenlik detayları.
-     * @return Bekleyen davetiyelerin listesiyle birlikte 200 OK yanıtı.
-     * @throws RuntimeException Kimliği doğrulanmış kullanıcı bulunamazsa.
      */
     @GetMapping("/pending")
     public ResponseEntity<List<Invitation>> getPendingInvitationsForUser(@AuthenticationPrincipal UserDetails currentUserDetails) {
@@ -47,11 +44,6 @@ public class InvitationController {
     /**
      * Belirli bir alışveriş listesi için başka bir kullanıcıya davetiye gönderir.
      * POST /api/invitations/send
-     * @param requestBody shoppingListId, recipientEmail ve isteğe bağlı olarak permissionLevel içerir.
-     * @param currentUserDetails Davetiyeyi gönderen kullanıcının güvenlik detayları.
-     * @return Oluşturulan davetiye ile birlikte 201 Created yanıtı.
-     * @throws IllegalArgumentException Geçersiz ID, e-posta veya yetki sorunu varsa (GlobalExceptionHandler yakalar).
-     * @throws SecurityException Davetiye gönderme yetkisi yoksa (GlobalExceptionHandler yakalar).
      */
     @PostMapping("/send")
     public ResponseEntity<Invitation> sendInvitation(@RequestBody Map<String, String> requestBody, @AuthenticationPrincipal UserDetails currentUserDetails) {
@@ -74,11 +66,6 @@ public class InvitationController {
     /**
      * Belirli bir davet kodunu kullanarak bir davetiyeyi kabul eder.
      * POST /api/invitations/accept/{invitationCode}
-     * @param invitationCode Kabul edilecek davetiyenin benzersiz kodu.
-     * @param currentUserDetails Davetiyeyi kabul eden kullanıcının güvenlik detayları.
-     * @return Kabul edilen davetiye ile birlikte 200 OK yanıtı.
-     * @throws IllegalArgumentException Geçersiz kod, süresi dolmuş veya zaten işlenmiş bir davetiye ise (GlobalExceptionHandler yakalar).
-     * @throws SecurityException Davetiye bu kullanıcı için değilse (GlobalExceptionHandler yakalar).
      */
     @PostMapping("/accept/{invitationCode}")
     public ResponseEntity<Invitation> acceptInvitation(@PathVariable String invitationCode, @AuthenticationPrincipal UserDetails currentUserDetails) {
@@ -92,11 +79,6 @@ public class InvitationController {
     /**
      * Belirli bir davet kodunu kullanarak bir davetiyeyi reddeder.
      * POST /api/invitations/reject/{invitationCode}
-     * @param invitationCode Reddedilecek davetiyenin benzersiz kodu.
-     * @param currentUserDetails Davetiyeyi reddeden kullanıcının güvenlik detayları.
-     * @return Reddedilen davetiye ile birlikte 200 OK yanıtı.
-     * @throws IllegalArgumentException Geçersiz kod veya zaten işlenmiş bir davetiye ise (GlobalExceptionHandler yakalar).
-     * @throws SecurityException Davetiye bu kullanıcı için değilse (GlobalExceptionHandler yakalar).
      */
     @PostMapping("/reject/{invitationCode}")
     public ResponseEntity<Invitation> rejectInvitation(@PathVariable String invitationCode, @AuthenticationPrincipal UserDetails currentUserDetails) {
@@ -110,11 +92,6 @@ public class InvitationController {
     /**
      * Belirli bir davetiyeyi siler. Yalnızca davetiyeyi gönderen veya liste yöneticisi silebilir.
      * DELETE /api/invitations/{id}
-     * @param id Silinecek davetiyenin ID'si.
-     * @param currentUserDetails İşlemi yapan kullanıcının güvenlik detayları.
-     * @return Başarılı silme durumunda 204 No Content yanıtı.
-     * @throws IllegalArgumentException Davetiye bulunamazsa (GlobalExceptionHandler yakalar).
-     * @throws SecurityException Kullanıcının silme yetkisi yoksa (GlobalExceptionHandler yakalar).
      */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT) // HTTP 204 No Content döner

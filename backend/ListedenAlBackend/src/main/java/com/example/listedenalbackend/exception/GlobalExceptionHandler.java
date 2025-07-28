@@ -1,4 +1,3 @@
-// com.example.listedenalbackend.exception.GlobalExceptionHandler.java
 package com.example.listedenalbackend.exception;
 
 import com.example.listedenalbackend.dto.ErrorResponse;

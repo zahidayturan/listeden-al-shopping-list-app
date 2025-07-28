@@ -52,7 +52,7 @@ public class AuthController {
 
     @Operation(
             summary = "Register a new user",
-            description = "Registers a new user with a unique username and a password. Returns the created user object without the password hash."
+            description = "Registers a new user with a unique username and a password. Returns the created user object."
     )
     @PostMapping("/register")
     public ResponseEntity<User> registerUser(@RequestBody RegisterRequest registerRequest) {
