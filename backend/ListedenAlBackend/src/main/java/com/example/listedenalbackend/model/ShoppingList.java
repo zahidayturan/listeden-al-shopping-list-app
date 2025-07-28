@@ -1,5 +1,6 @@
 package com.example.listedenalbackend.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -42,9 +43,11 @@ public class ShoppingList {
     private boolean isArchived = false;
 
     @OneToMany(mappedBy = "shoppingList", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<ListItem> items = new ArrayList<>();
 
     @OneToMany(mappedBy = "shoppingList", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private Set<ListShare> listShares = new HashSet<>(); // Liste paylaşım ilişkisi
 
     @PrePersist

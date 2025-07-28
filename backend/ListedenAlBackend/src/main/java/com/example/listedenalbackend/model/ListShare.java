@@ -1,5 +1,6 @@
 package com.example.listedenalbackend.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -24,6 +25,7 @@ public class ListShare {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shopping_list_id", nullable = false)
     @EqualsAndHashCode.Include // Eşsizlik kısıtlaması için dahil edildi
+    @JsonBackReference
     private ShoppingList shoppingList;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -1,5 +1,6 @@
 package com.example.listedenalbackend.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,6 +22,7 @@ public class UserRole {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     @EqualsAndHashCode.Include
+    @JsonBackReference
     private User user;
 
     @ManyToOne(fetch = FetchType.EAGER)

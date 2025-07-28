@@ -1,5 +1,6 @@
 package com.example.listedenalbackend.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -21,6 +22,7 @@ public class ListItem {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shopping_list_id", nullable = false)
+    @JsonBackReference
     private ShoppingList shoppingList;
 
     @Column(nullable = false)
