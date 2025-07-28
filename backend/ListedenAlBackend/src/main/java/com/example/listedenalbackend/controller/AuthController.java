@@ -7,7 +7,6 @@ import com.example.listedenalbackend.dto.RegisterRequest;
 import com.example.listedenalbackend.dto.LoginRequest;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -63,16 +64,14 @@ public class UserService {
         user.setFirstName(newUser.getFirstName());
         user.setLastName(newUser.getLastName());
         user.setPasswordHash(passwordEncoder.encode(newUser.getPassword()));
-        user.setCreatedAt(LocalDateTime.now());
-        user.setUpdatedAt(LocalDateTime.now());
 
         User savedUser = userRepository.save(user);
 
         Role userRole = roleRepository.findByName("ROLE_USER")
                 .orElseGet(() -> roleRepository.save(new Role("ROLE_USER")));
-        userRoleRepository.save(new UserRole(savedUser, userRole));
 
-        savedUser.setUserRoles(userRoleRepository.findByUser(savedUser).stream().collect(Collectors.toSet()));
+        UserRole newUserRole = new UserRole(savedUser, userRole);
+        userRoleRepository.save(newUserRole);
         return savedUser;
     }
 
@@ -108,7 +107,6 @@ public class UserService {
 
     @Transactional
     public void deleteUser(Long id) {
-        // İlişkili UserRole'ları da siler (CascadeType.ALL ve orphanRemoval=true sayesinde)
         userRepository.deleteById(id);
     }
 

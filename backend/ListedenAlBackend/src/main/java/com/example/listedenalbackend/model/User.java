@@ -12,13 +12,13 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = {"passwordHash", "userRoles"}) // passwordHash ve userRoles'u ToString'den hariç tut
-@EqualsAndHashCode(onlyExplicitlyIncluded = true) // Sadece belirtilen alanları equals/hashCode'a dahil et
+@ToString(exclude = {"passwordHash", "userRoles"})
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @EqualsAndHashCode.Include // id'yi equals/hashCode'a dahil et
+    @EqualsAndHashCode.Include
     private Long id;
 
     @Column(unique = true, nullable = false)
@@ -39,8 +39,23 @@ public class User {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<UserRole> userRoles = new HashSet<>();
+
+    public void addUserRole(UserRole userRole) {
+        if (this.userRoles == null) {
+            this.userRoles = new HashSet<>();
+        }
+        this.userRoles.add(userRole);
+        userRole.setUser(this);
+    }
+
+    public void removeUserRole(UserRole userRole) {
+        if (this.userRoles != null) {
+            this.userRoles.remove(userRole);
+            userRole.setUser(null);
+        }
+    }
 
     @PrePersist
     protected void onCreate() {

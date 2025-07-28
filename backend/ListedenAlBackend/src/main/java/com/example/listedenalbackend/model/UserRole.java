@@ -23,7 +23,7 @@ public class UserRole {
     @EqualsAndHashCode.Include
     private User user;
 
-    @ManyToOne(fetch = FetchType.EAGER) // Rol bilgisi genellikle hemen lazım olur
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id", nullable = false)
     @EqualsAndHashCode.Include
     private Role role;
@@ -31,5 +31,8 @@ public class UserRole {
     public UserRole(User user, Role role) {
         this.user = user;
         this.role = role;
+        if (user != null) {
+            user.getUserRoles().add(this);
+        }
     }
 }
