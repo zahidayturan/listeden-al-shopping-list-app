@@ -14,9 +14,10 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Uygulama ilk açıldığında varsayılan olarak Ana Sayfa'yı yükle
+        // Uygulama ilk açıldığında varsayılan olarak Giriş Sayfası'nı yükle
+        // Eğer kullanıcı zaten giriş yapmışsa HomeFragment'a yönlendirebilirsiniz.
         if (savedInstanceState == null) {
-            loadFragment(HomeFragment())
+            loadFragment(LoginFragment()) // Uygulama başlangıcında LoginFragment'ı yükle
         }
 
         // Bottom Navigation Bar'daki item tıklamalarını dinle
@@ -31,7 +32,10 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.navigation_profile -> {
-                    loadFragment(ProfileFragment())
+                    // Profil sekmesine tıklandığında Giriş sayfasına veya Profil sayfasına yönlendir
+                    // Burada bir kontrol yaparak kullanıcının giriş yapıp yapmadığını kontrol edebilirsiniz.
+                    // Şimdilik direkt LoginFragment'a yönlendiriyoruz.
+                    loadFragment(LoginFragment())
                     true
                 }
                 else -> false
@@ -40,7 +44,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     // Belirtilen Fragment'ı FrameLayout'a yükleyen yardımcı fonksiyon
-    private fun loadFragment(fragment: Fragment) {
+    fun loadFragment(fragment: Fragment) { // Public olarak değiştirildi
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
             .commit()
