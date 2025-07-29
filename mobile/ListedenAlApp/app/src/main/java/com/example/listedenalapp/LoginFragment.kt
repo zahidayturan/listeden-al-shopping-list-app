@@ -7,16 +7,26 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope // Coroutine'ler için
+import androidx.lifecycle.lifecycleScope
 import com.example.listedenalapp.data.api.RetrofitClient
 import com.example.listedenalapp.data.model.UserLoginRequest
 import com.example.listedenalapp.databinding.FragmentLoginBinding
-import kotlinx.coroutines.launch // Coroutine başlatmak için
+import com.example.listedenalapp.utils.AuthTokenManager // AuthTokenManager'ı import edin
+import kotlinx.coroutines.launch
 
 class LoginFragment : Fragment() {
 
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
+
+    // AuthTokenManager örneğini oluşturun
+    private lateinit var authTokenManager: AuthTokenManager
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        // onCreate'de veya onViewCreated'da manager'ı başlatın
+        authTokenManager = AuthTokenManager(requireContext())
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -53,18 +63,18 @@ class LoginFragment : Fragment() {
     }
 
     private fun apiLogin(username: String, password: String) {
-        // UI'yı bloklamamak için coroutine kullan
         lifecycleScope.launch {
             try {
                 val request = UserLoginRequest(username, password)
-                val response = RetrofitClient.instance.loginUser(request)
+                // RetrofitClient.instance yerine RetrofitClient.getClient(requireContext()) kullan
+                val response = RetrofitClient.getClient(requireContext()).loginUser(request)
 
                 if (response.isSuccessful) {
                     val authResponse = response.body()
                     authResponse?.let {
                         Toast.makeText(context, "${it.message} Hoş geldiniz ${it.username}!", Toast.LENGTH_LONG).show()
-                        // TODO: Auth token'ı SharedPreferences veya DataStore'a kaydet
-                        // navigate to HomeFragment
+                        authTokenManager.saveAuthToken(it.token)
+                        Log.d("LoginFragment", "Token kaydedildi: ${it.token}")
                         (activity as? MainActivity)?.loadFragment(HomeFragment())
                     }
                 } else {

@@ -53,4 +53,11 @@ dependencies {
     // OkHttp
     implementation 'com.squareup.okhttp3:okhttp:4.10.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:4.10.0' // Ağ isteklerini loglamak için
+
+    // Kotlin Coroutines
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1"
+
+    // DataStore (Preferences DataStore kullanacağız)
+    implementation "androidx.datastore:datastore-preferences:1.0.0"
 }

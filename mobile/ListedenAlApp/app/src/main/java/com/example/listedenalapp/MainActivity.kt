@@ -3,24 +3,27 @@ package com.example.listedenalapp
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.example.listedenalapp.databinding.ActivityMainBinding
+import com.example.listedenalapp.utils.AuthTokenManager
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private lateinit var authTokenManager: AuthTokenManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Uygulama ilk açıldığında varsayılan olarak Giriş Sayfası'nı yükle
-        // Eğer kullanıcı zaten giriş yapmışsa HomeFragment'a yönlendirebilirsiniz.
+        authTokenManager = AuthTokenManager(applicationContext)
+
         if (savedInstanceState == null) {
-            loadFragment(LoginFragment()) // Uygulama başlangıcında LoginFragment'ı yükle
+            checkAuthTokenAndNavigate()
         }
 
-        // Bottom Navigation Bar'daki item tıklamalarını dinle
         binding.bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.navigation_home -> {
@@ -32,10 +35,7 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.navigation_profile -> {
-                    // Profil sekmesine tıklandığında Giriş sayfasına veya Profil sayfasına yönlendir
-                    // Burada bir kontrol yaparak kullanıcının giriş yapıp yapmadığını kontrol edebilirsiniz.
-                    // Şimdilik direkt LoginFragment'a yönlendiriyoruz.
-                    loadFragment(LoginFragment())
+                    checkAuthTokenAndNavigate()
                     true
                 }
                 else -> false
@@ -43,10 +43,24 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // Belirtilen Fragment'ı FrameLayout'a yükleyen yardımcı fonksiyon
-    fun loadFragment(fragment: Fragment) { // Public olarak değiştirildi
+    private fun checkAuthTokenAndNavigate() {
+        lifecycleScope.launch {
+            val token = authTokenManager.getAuthToken()
+            if (token != null) {
+                loadFragment(HomeFragment())
+            } else {
+                loadFragment(LoginFragment())
+            }
+        }
+    }
+
+    fun loadFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
             .commit()
+    }
+
+    fun setBottomNavigationSelectedItem(itemId: Int) {
+        binding.bottomNavigation.selectedItemId = itemId
     }
 }

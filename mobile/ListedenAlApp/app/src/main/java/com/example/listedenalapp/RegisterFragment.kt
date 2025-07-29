@@ -59,13 +59,12 @@ class RegisterFragment : Fragment() {
         lifecycleScope.launch {
             try {
                 val request = UserRegisterRequest(username, email, password, firstName, lastName)
-                val response = RetrofitClient.instance.registerUser(request)
+                val response = RetrofitClient.getClient(requireContext()).registerUser(request)
 
                 if (response.isSuccessful) {
                     val authResponse = response.body()
                     authResponse?.let {
                         Toast.makeText(context, "${it.message} Lütfen giriş yapın.", Toast.LENGTH_LONG).show()
-                        // Kayıt başarılı, şimdi giriş sayfasına yönlendir
                         (activity as? MainActivity)?.loadFragment(LoginFragment())
                     }
                 } else {
