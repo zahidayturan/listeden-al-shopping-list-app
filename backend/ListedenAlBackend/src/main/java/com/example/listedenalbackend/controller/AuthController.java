@@ -7,10 +7,12 @@ import com.example.listedenalbackend.dto.RegisterRequest;
 import com.example.listedenalbackend.dto.LoginRequest;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -85,5 +87,17 @@ public class AuthController {
         response.put("username", username);
 
         return ResponseEntity.ok(response);
+    }
+
+    @Operation(
+            summary = "Say hello to Admin",
+            description = "Returns a greeting message only if the authenticated user has the ADMIN role.",
+            security = @SecurityRequirement(name = "BearerAuth")
+    )
+    @GetMapping("/admin/hello")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<String> sayHelloToAdmin() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return ResponseEntity.ok("Hello, Admin " + username + "! You have accessed the admin-only endpoint.");
     }
 }
