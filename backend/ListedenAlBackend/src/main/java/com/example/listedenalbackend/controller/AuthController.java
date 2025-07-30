@@ -68,7 +68,7 @@ public class AuthController {
     )
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> authenticateUser(@RequestBody LoginRequest loginRequest) { // Use DTO here
-        String username = loginRequest.getUsername();
+        String username = loginRequest.getUsernameOrEmail();
         String password = loginRequest.getPassword();
 
         Authentication authentication = authenticationManager.authenticate(

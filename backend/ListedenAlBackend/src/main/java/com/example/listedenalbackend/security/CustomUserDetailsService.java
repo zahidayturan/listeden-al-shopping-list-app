@@ -25,12 +25,12 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    @Transactional // Rolleri ve diğer ilişkili verileri yüklemek için gerekli olabilir
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
+    @Transactional
+    public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
+        User user = userRepository.findByEmail(usernameOrEmail)
+                .orElseGet(() -> userRepository.findByUsername(usernameOrEmail)
+                        .orElseThrow(() -> new UsernameNotFoundException("User not found with username or email: " + usernameOrEmail)));
 
-        // Kullanıcının rollerini Spring Security'nin beklediği formata dönüştür
         Collection<SimpleGrantedAuthority> authorities = user.getUserRoles().stream()
                 .map(UserRole::getRole)
                 .map(role -> new SimpleGrantedAuthority(role.getName()))
@@ -38,7 +38,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),
-                user.getPasswordHash(), // Hashlenmiş parola
+                user.getPasswordHash(),
                 authorities
         );
     }
