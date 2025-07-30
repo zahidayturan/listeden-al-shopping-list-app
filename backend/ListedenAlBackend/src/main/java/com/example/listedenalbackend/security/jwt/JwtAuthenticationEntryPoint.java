@@ -20,9 +20,12 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     public void commence(HttpServletRequest httpServletRequest,
                          HttpServletResponse httpServletResponse,
                          AuthenticationException e) throws IOException, ServletException {
-        logger.error("Responding with unauthorized error. Message - {}", e.getMessage());
-        // Burada istemciye 401 Unauthorized hatası dönebilirsiniz.
-        // Hata mesajını daha detaylı veya JSON formatında da dönebilirsiniz.
-        httpServletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, e.getMessage());
+        // Kimlik doğrulama hatasını logla. Üretim ortamında ham hata mesajlarını doğrudan istemciye göndermek yerine
+        // daha genel bir mesaj tercih etmek genellikle daha iyidir.
+        logger.error("Yetkisiz erişim denemesi. Mesaj: {}", e.getMessage());
+
+        // 401 Yetkisiz (Unauthorized) hata yanıtı gönder.
+        // İstemciye dönen hata mesajını daha açıklayıcı hale getirebilir veya JSON formatında hata detayları döndürebilirsiniz.
+        httpServletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Yetkisiz: " + e.getMessage());
     }
 }
