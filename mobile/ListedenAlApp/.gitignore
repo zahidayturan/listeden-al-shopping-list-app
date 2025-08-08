@@ -1,6 +1,7 @@
 # Generic Android Studio files
 
 ## Build folders and temporary files
+/.idea/
 .gradle/
 /local.properties
 /.idea/caches/
@@ -11,6 +12,7 @@
 build/
 captures/
 .externalNativeBuild/
+.idea/
 .cxx/
 *.iml
 *.ap_
