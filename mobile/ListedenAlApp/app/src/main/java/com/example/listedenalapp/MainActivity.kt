@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
             if (token != null) {
                 loadFragment(HomeFragment())
             } else {
-                loadFragment(LoginFragment())
+                loadFragment(WelcomeFragment())
             }
         }
     }
