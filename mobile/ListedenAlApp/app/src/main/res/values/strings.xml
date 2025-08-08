@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">ListedenAlApp</string>
+    <string name="welcome">Hoş Geldin</string>
+    <string name="register_button_text">Yeni <b>Hesap Oluştur</b></string>
+    <string name="or">veya</string>
+    <string name="register_google_button_text">Google ile <b>Kayıt Ol</b></string>
+    <string name="already_have_account">Zaten bir hesabın var mı?</string>
+    <string name="login_button_text">Hesabına <b>Giriş Yap</b></string>
 </resources>
