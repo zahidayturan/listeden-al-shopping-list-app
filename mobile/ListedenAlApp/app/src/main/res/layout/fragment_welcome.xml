@@ -94,7 +94,6 @@
                 android:layout_marginTop="8dp"
                 android:text="@string/privacy_policy_text"
                 android:textAlignment="viewStart"
-                android:justificationMode="inter_word"
                 android:textSize="12sp" />
         </LinearLayout>
 
