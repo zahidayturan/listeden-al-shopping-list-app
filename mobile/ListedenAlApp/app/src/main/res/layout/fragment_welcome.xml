@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/welcome_bg"
     tools:context=".WelcomeFragment">
 
     <LinearLayout
@@ -93,7 +94,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="@string/privacy_policy_text"
-                android:textAlignment="viewStart"
+                android:textAlignment="center"
                 android:textSize="12sp" />
         </LinearLayout>
 
