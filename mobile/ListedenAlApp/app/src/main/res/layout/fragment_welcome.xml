@@ -7,17 +7,7 @@
     android:layout_height="match_parent"
     tools:context=".WelcomeFragment">
 
-    <ImageView
-        android:id="@+id/background_image"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:contentDescription="@string/app_image"
-        android:scaleType="centerCrop"
-        android:src="@drawable/welcome_bg"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <include layout="@layout/auth_layout_background_image" />
 
     <LinearLayout
         android:layout_width="0dp"
@@ -66,14 +56,8 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonRegister"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/register_button_text"
-                android:textColor="#F2F2F2"
-                app:backgroundTint="@color/black_700"
-                android:textAllCaps="false"
-                android:paddingVertical="14dp"
-                app:cornerRadius="30dp" />
+                style="@style/LoginRegisterButton"
+                android:text="@string/register_button_text" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -83,22 +67,8 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonGoggleRegister"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@android:color/transparent"
-                android:text="@string/register_google_button_text"
-                android:textAllCaps="false"
-                android:textColor="@color/black_700"
-                android:paddingVertical="12dp"
-                app:cornerRadius="30dp"
-                app:icon="@drawable/ic_google"
-                app:iconGravity="textStart"
-                app:iconSize="16dp"
-                app:iconTintMode="multiply"
-                app:strokeColor="@color/black_700"
-                app:strokeWidth="1dp"
-                app:elevation="0dp"
-                android:stateListAnimator="@null" />
+                style="@style/GoogleButton"
+                android:text="@string/register_google_button_text" />
 
             <TextView
                 android:id="@+id/privacyPolicyTextView"
@@ -124,15 +94,11 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonLogin"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                style="@style/LoginRegisterButton"
                 app:backgroundTint="@color/green_500"
-                android:paddingVertical="14dp"
-                android:text="@string/login_button_text"
-                android:textAllCaps="false"
                 android:layout_marginBottom="30dp"
                 android:layout_marginTop="10dp"
-                app:cornerRadius="30dp" />
+                android:text="@string/login_button_text"/>
 
             <TextView
                 android:layout_width="wrap_content"
