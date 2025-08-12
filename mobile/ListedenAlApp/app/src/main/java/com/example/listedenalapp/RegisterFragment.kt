@@ -11,6 +11,7 @@ import androidx.lifecycle.lifecycleScope // Coroutine'ler için
 import com.example.listedenalapp.data.api.RetrofitClient
 import com.example.listedenalapp.data.model.UserRegisterRequest
 import com.example.listedenalapp.databinding.FragmentRegisterBinding
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.launch // Coroutine başlatmak için
 
 class RegisterFragment : Fragment() {
@@ -29,19 +30,19 @@ class RegisterFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        (activity as? MainActivity)?.findViewById<BottomNavigationView>(R.id.bottom_navigation)?.visibility = View.GONE
+
         binding.buttonRegister.setOnClickListener {
             val username = binding.editTextUsernameRegister.text.toString().trim()
             val email = binding.editTextEmailRegister.text.toString().trim()
             val password = binding.editTextPasswordRegister.text.toString().trim()
-            val firstName = binding.editTextFirstNameRegister.text.toString().trim()
-            val lastName = binding.editTextLastNameRegister.text.toString().trim()
 
-            if (username.isEmpty() || email.isEmpty() || password.isEmpty() || firstName.isEmpty() || lastName.isEmpty()) {
+            if (username.isEmpty() || email.isEmpty() || password.isEmpty()) {
                 Toast.makeText(context, "Tüm alanları doldurmanız gerekmektedir.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-
-            apiRegister(username, email, password, firstName, lastName)
+            (activity as? MainActivity)?.loadHomeFragment()
+            // apiRegister(username, email, password)
         }
 
         binding.textViewLoginPrompt.setOnClickListener {
@@ -55,10 +56,15 @@ class RegisterFragment : Fragment() {
         _binding = null
     }
 
-    private fun apiRegister(username: String, email: String, password: String, firstName: String, lastName: String) {
+    override fun onPause() {
+        super.onPause()
+        (activity as? MainActivity)?.findViewById<BottomNavigationView>(R.id.bottom_navigation)?.visibility = View.VISIBLE
+    }
+
+    private fun apiRegister(username: String, email: String, password: String) {
         lifecycleScope.launch {
             try {
-                val request = UserRegisterRequest(username, email, password, firstName, lastName)
+                val request = UserRegisterRequest(username, email, password, "firstName", "lastName")
                 val response = RetrofitClient.getClient(requireContext()).registerUser(request)
 
                 if (response.isSuccessful) {
