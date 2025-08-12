@@ -4,9 +4,12 @@
     <string name="register_button_text">Yeni <b>Hesap Oluştur</b></string>
     <string name="or">veya</string>
     <string name="register_google_button_text">Google ile <b>Kayıt Ol</b></string>
+    <string name="login_google_button_text">Google ile <b>Giriş Yap</b></string>
     <string name="privacy_policy_text">Kaydolduğunuzda, Çerez Kullanımı da dahil olmak üzere Hizmet Şartları ve Gizlilik Politikası\'nı kabul etmiş olursunuz.</string>
     <string name="already_have_account">Zaten bir hesabın var mı?</string>
     <string name="login_button_text">Hesabına <b>Giriş Yap</b></string>
     <string name="app_image">App Image</string>
+
+    <string name="login">Giriş Yap</string>
 
 </resources>
