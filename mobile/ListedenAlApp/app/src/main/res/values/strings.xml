@@ -12,5 +12,7 @@
     <string name="register">Kayıt Ol</string>
     <string name="create_account">Hesap Oluştur</string>
     <string name="login">Giriş Yap</string>
+    <string name="title_activity_splash">SplashActivity</string>
+    <string name="title_activity_auth">AuthActivity</string>
 
 </resources>
