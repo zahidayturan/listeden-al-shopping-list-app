@@ -39,10 +39,10 @@ class AuthActivity : AppCompatActivity() {
         }
     }
 
-    private fun loadFragment(fragment: Fragment) {
+    fun loadFragment(fragment: Fragment) {
         val fragmentManager = supportFragmentManager
         val fragmentTransaction = fragmentManager.beginTransaction()
-        fragmentTransaction.replace(R.id.welcome_layout, fragment)
+        fragmentTransaction.replace(R.id.auth_fragment_container, fragment)
         fragmentTransaction.commit()
     }
 }

@@ -11,8 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import com.example.listedenalapp.data.api.RetrofitClient
 import com.example.listedenalapp.data.model.UserLoginRequest
 import com.example.listedenalapp.databinding.FragmentLoginBinding
-import com.example.listedenalapp.utils.AuthTokenManager // AuthTokenManager'ı import edin
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.example.listedenalapp.utils.AuthTokenManager
 import kotlinx.coroutines.launch
 
 class LoginFragment : Fragment() {
@@ -40,9 +39,6 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        (activity as? MainActivity)?.findViewById<BottomNavigationView>(R.id.bottom_navigation)?.visibility = View.GONE
-
-
         binding.buttonLogin.setOnClickListener {
             val username = binding.editTextUsernameLogin.text.toString().trim()
             val password = binding.editTextPasswordLogin.text.toString().trim()
@@ -57,7 +53,7 @@ class LoginFragment : Fragment() {
 
         binding.textViewRegisterPrompt.setOnClickListener {
             // Kayıt sayfasına git
-            (activity as? MainActivity)?.loadFragment(RegisterFragment())
+            (activity as? AuthActivity)?.loadFragment(RegisterFragment())
         }
     }
 
@@ -65,12 +61,6 @@ class LoginFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
-
-    override fun onPause() {
-        super.onPause()
-        (activity as? MainActivity)?.findViewById<BottomNavigationView>(R.id.bottom_navigation)?.visibility = View.VISIBLE
-    }
-
 
     private fun apiLogin(username: String, password: String) {
         lifecycleScope.launch {

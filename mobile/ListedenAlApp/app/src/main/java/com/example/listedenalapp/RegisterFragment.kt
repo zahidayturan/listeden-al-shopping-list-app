@@ -11,7 +11,6 @@ import androidx.lifecycle.lifecycleScope // Coroutine'ler için
 import com.example.listedenalapp.data.api.RetrofitClient
 import com.example.listedenalapp.data.model.UserRegisterRequest
 import com.example.listedenalapp.databinding.FragmentRegisterBinding
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.launch // Coroutine başlatmak için
 
 class RegisterFragment : Fragment() {
@@ -30,8 +29,6 @@ class RegisterFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        (activity as? MainActivity)?.findViewById<BottomNavigationView>(R.id.bottom_navigation)?.visibility = View.GONE
-
         binding.buttonRegister.setOnClickListener {
             val username = binding.editTextUsernameRegister.text.toString().trim()
             val email = binding.editTextEmailRegister.text.toString().trim()
@@ -47,18 +44,13 @@ class RegisterFragment : Fragment() {
 
         binding.textViewLoginPrompt.setOnClickListener {
             // Giriş sayfasına git
-            (activity as? MainActivity)?.loadFragment(LoginFragment())
+            (activity as? AuthActivity)?.loadFragment(LoginFragment())
         }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    override fun onPause() {
-        super.onPause()
-        (activity as? MainActivity)?.findViewById<BottomNavigationView>(R.id.bottom_navigation)?.visibility = View.VISIBLE
     }
 
     private fun apiRegister(username: String, email: String, password: String) {

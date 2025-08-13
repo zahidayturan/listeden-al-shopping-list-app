@@ -33,18 +33,16 @@ class WelcomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        (activity as? MainActivity)?.findViewById<BottomNavigationView>(R.id.bottom_navigation)?.visibility = View.GONE
-
         setupPrivacyPolicyText()
 
         binding.buttonRegister.setOnClickListener {
             // Kayıt sayfasına git
-            (activity as? MainActivity)?.loadFragment(RegisterFragment())
+            (activity as? AuthActivity)?.loadFragment(RegisterFragment())
         }
 
         binding.buttonLogin.setOnClickListener {
             // Giriş sayfasına git
-            (activity as? MainActivity)?.loadFragment(LoginFragment())
+            (activity as? AuthActivity)?.loadFragment(LoginFragment())
         }
     }
 
@@ -88,11 +86,6 @@ class WelcomeFragment : Fragment() {
 
         spannableString.setSpan(clickableSpan, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
         spannableString.setSpan(StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-    }
-
-    override fun onPause() {
-        super.onPause()
-        (activity as? MainActivity)?.findViewById<BottomNavigationView>(R.id.bottom_navigation)?.visibility = View.VISIBLE
     }
 
     override fun onDestroyView() {
