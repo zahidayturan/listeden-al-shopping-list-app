@@ -47,7 +47,6 @@ class MainActivity : AppCompatActivity() {
         fragmentTransaction.commit()
     }
 
-    // Gerekli kalırsa bu metotları kullanabilirsin.
     fun loadHomeFragment() {
         supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
         val fragmentTransaction = supportFragmentManager.beginTransaction()

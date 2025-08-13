@@ -38,7 +38,7 @@ class RegisterFragment : Fragment() {
                 Toast.makeText(context, "Tüm alanları doldurmanız gerekmektedir.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            (activity as? MainActivity)?.loadHomeFragment()
+            (activity as? AuthActivity)?.navigateToHome()
             // apiRegister(username, email, password)
         }
 

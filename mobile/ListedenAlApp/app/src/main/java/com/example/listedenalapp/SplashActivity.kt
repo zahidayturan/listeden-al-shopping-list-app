@@ -34,13 +34,9 @@ class SplashActivity : AppCompatActivity() {
                 // Splash Activity'yi kapatıyoruz ki geri tuşuna basınca tekrar gelmesin.
                 finish()
             }
-        }, 2000) // 2 saniye bekle
+        }, 1000) // 2 saniye bekle
     }
 
-    /**
-     * Kullanıcının giriş yapıp yapmadığını kontrol eden sahte bir metot.
-     * Gerçek uygulamada SharedPreferences veya veritabanı kontrolü yapmalısın.
-     */
     private fun checkIfUserIsLoggedIn(): Boolean {
         // Gerçek uygulamada burada SharedPreferences'dan bir token'ı kontrol edebilirsiniz.
         // Şimdilik varsayılan olarak 'false' dönüyoruz.
