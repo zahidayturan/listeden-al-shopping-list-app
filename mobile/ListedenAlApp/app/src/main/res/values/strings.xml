@@ -15,4 +15,12 @@
     <string name="title_activity_splash">SplashActivity</string>
     <string name="title_activity_auth">AuthActivity</string>
 
+
+
+    <string name="error_invalid_credentials">Yanlış e-posta veya şifre.</string>
+    <string name="error_user_not_found">Kullanıcı bulunamadı.</string>
+    <string name="error_authentication_failed">Kimlik doğrulama hatası.</string>
+    <string name="error_server_error">Sunucu hatası. Lütfen daha sonra tekrar deneyin.</string>
+    <string name="error_unknown">Bilinmeyen hata.</string>
+
 </resources>

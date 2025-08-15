@@ -14,6 +14,7 @@ import com.example.listedenalapp.data.api.RetrofitClient
 import com.example.listedenalapp.data.model.UserLoginRequest
 import com.example.listedenalapp.databinding.FragmentLoginBinding
 import com.example.listedenalapp.utils.AuthTokenManager
+import com.google.gson.Gson
 import kotlinx.coroutines.launch
 
 class LoginFragment : Fragment() {
@@ -58,11 +59,11 @@ class LoginFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            if (!email.matches(emailRegex)) {
+            /*if (!email.matches(emailRegex)) {
                 binding.editTextEmailLogin.error = "Lütfen geçerli bir e-posta adresi girin."
                 binding.editTextEmailLogin.requestFocus()
                 return@setOnClickListener
-            }
+            }*/
 
             if (password.isEmpty()) {
                 binding.editTextPasswordLogin.requestFocus()
@@ -110,22 +111,34 @@ class LoginFragment : Fragment() {
         lifecycleScope.launch {
             try {
                 val request = UserLoginRequest(email, password)
-                // RetrofitClient.instance yerine RetrofitClient.getClient(requireContext()) kullan
                 val response = RetrofitClient.getClient(requireContext()).loginUser(request)
-//does the cookbook have pictures in it
-                // the rcipe is on page 12 of the cookbook
+
                 if (response.isSuccessful) {
                     val authResponse = response.body()
                     authResponse?.let {
-                        Toast.makeText(context, "${it.message} Hoş geldiniz ${it.username}!", Toast.LENGTH_LONG).show()
-                        authTokenManager.saveAuthToken(it.token)
-                        Log.d("LoginFragment", "Token kaydedildi: ${it.token}")
-                        (activity as? MainActivity)?.loadFragment(HomeFragment())
+                        Toast.makeText(context, "Hoş geldiniz !", Toast.LENGTH_LONG).show()
+                        authTokenManager.saveAuthToken(it.accessToken)
+                        (activity as? AuthActivity)?.navigateToHome()
                     }
                 } else {
                     val errorBody = response.errorBody()?.string()
-                    Toast.makeText(context, "Giriş başarısız: ${errorBody ?: "Bilinmeyen hata"}", Toast.LENGTH_LONG).show()
-                    Log.e("LoginFragment", "Giriş hatası: ${response.code()} - ${errorBody}")
+                    val errorMap: Map<String, String>? = try {
+                        Gson().fromJson(errorBody, Map::class.java) as Map<String, String>
+                    } catch (e: Exception) {
+                        null
+                    }
+
+                    val errorKey = errorMap?.get("error")
+                    val errorMessage = when (errorKey) {
+                        "invalid_credentials" -> getString(R.string.error_invalid_credentials)
+                        "user_not_found" -> getString(R.string.error_user_not_found)
+                        "authentication_failed" -> getString(R.string.error_authentication_failed)
+                        "server_error" -> getString(R.string.error_server_error)
+                        else -> getString(R.string.error_unknown)
+                    }
+
+                    Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
+                    Log.e("LoginFragment", "Giriş hatası: ${response.code()} - Key: ${errorKey}")
                 }
             } catch (e: Exception) {
                 Toast.makeText(context, "Bağlantı hatası: ${e.message}", Toast.LENGTH_LONG).show()
