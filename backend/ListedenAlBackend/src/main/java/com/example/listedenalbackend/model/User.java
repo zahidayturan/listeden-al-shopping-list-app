@@ -22,7 +22,7 @@ public class User {
     @EqualsAndHashCode.Include
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String username;
 
     @Column(unique = true, nullable = false)

@@ -69,7 +69,7 @@ public class AuthController {
 
     @Operation(
             summary = "Authenticate user and get JWT token",
-            description = "Authenticates a user with provided username and password and returns a JWT access token."
+            description = "Authenticates a user with provided email and password and returns a JWT access token."
     )
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> authenticateUser(@RequestBody LoginRequest loginRequest) {

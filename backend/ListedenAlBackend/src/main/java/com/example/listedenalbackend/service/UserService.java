@@ -8,17 +8,13 @@ import com.example.listedenalbackend.repository.UserRepository;
 import com.example.listedenalbackend.repository.RoleRepository;
 import com.example.listedenalbackend.repository.UserRoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder; // Parola hashleme için
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 @Service
 public class UserService {
 
@@ -51,9 +47,6 @@ public class UserService {
             throw new IllegalArgumentException("Password cannot be empty or null in RegisterRequest.");
         }
 
-        if (userRepository.existsByUsername(newUser.getUsername())) {
-            throw new IllegalArgumentException("Username already taken: " + newUser.getUsername());
-        }
         if (userRepository.existsByEmail(newUser.getEmail())) {
             throw new IllegalArgumentException("Email already registered: " + newUser.getEmail());
         }
@@ -80,9 +73,6 @@ public class UserService {
         return userRepository.findById(id).map(existingUser -> {
             // Sadece güncellenebilecek alanları ayarla
             if (userDetails.getUsername() != null && !userDetails.getUsername().equals(existingUser.getUsername())) {
-                if (userRepository.existsByUsername(userDetails.getUsername())) {
-                    throw new IllegalArgumentException("Username already taken: " + userDetails.getUsername());
-                }
                 existingUser.setUsername(userDetails.getUsername());
             }
             if (userDetails.getEmail() != null && !userDetails.getEmail().equals(existingUser.getEmail())) {
