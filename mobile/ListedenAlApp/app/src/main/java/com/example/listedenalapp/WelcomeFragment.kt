@@ -15,7 +15,7 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.listedenalapp.databinding.FragmentWelcomeBinding
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.example.listedenalapp.ui.login.LoginFragment
 
 class WelcomeFragment : Fragment() {
 

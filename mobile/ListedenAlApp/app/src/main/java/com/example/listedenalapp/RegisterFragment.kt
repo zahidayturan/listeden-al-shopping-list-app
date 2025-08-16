@@ -13,6 +13,7 @@ import androidx.lifecycle.lifecycleScope // Coroutine'ler için
 import com.example.listedenalapp.data.api.RetrofitClient
 import com.example.listedenalapp.data.model.UserRegisterRequest
 import com.example.listedenalapp.databinding.FragmentRegisterBinding
+import com.example.listedenalapp.ui.login.LoginFragment
 import kotlinx.coroutines.launch // Coroutine başlatmak için
 
 class RegisterFragment : Fragment() {
