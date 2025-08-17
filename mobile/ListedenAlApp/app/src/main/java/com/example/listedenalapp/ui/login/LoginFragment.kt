@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import com.example.listedenalapp.AuthActivity
+import com.example.listedenalapp.RegisterFragment
 import com.example.listedenalapp.data.api.RetrofitClient
 import com.example.listedenalapp.data.repository.AuthRepository
 import com.example.listedenalapp.databinding.FragmentLoginBinding
@@ -46,14 +47,14 @@ class LoginFragment : Fragment() {
         updateButtonState()
 
         loginViewModel.isLoading.observe(viewLifecycleOwner, Observer { isLoading ->
+            binding.buttonLogin.isEnabled = !isLoading
+            binding.textViewRegisterPrompt.isClickable = !isLoading
             if (isLoading) {
-                binding.buttonLogin.isEnabled = false
                 binding.buttonLogin.alpha = 0.6f
-                binding.loginButtonLayout.visibility = View.VISIBLE
+                binding.loginButtonProgress.visibility = View.VISIBLE
             } else {
-                binding.buttonLogin.isEnabled = true
                 updateButtonState()
-                binding.loginButtonLayout.visibility = View.GONE
+                binding.loginButtonProgress.visibility = View.GONE
             }
         })
 
@@ -86,6 +87,10 @@ class LoginFragment : Fragment() {
             }, onError = {
                 Toast.makeText(context, it, Toast.LENGTH_LONG).show()
             })
+        }
+
+        binding.textViewRegisterPrompt.setOnClickListener {
+            (activity as? AuthActivity)?.loadFragment(RegisterFragment())
         }
     }
 

@@ -77,31 +77,25 @@
                         android:imeOptions="actionDone" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonLogin"
-                    style="@style/LoginRegisterButton"
-                    android:text="@string/login" />
-
-                <LinearLayout
-                    android:id="@+id/loginButtonLayout"
+                <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:visibility="gone">
+                    android:layout_height="wrap_content">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/buttonLogin"
+                        style="@style/LoginRegisterButton"
+                        android:text="@string/login" />
 
                     <ProgressBar
+                        android:id="@+id/loginButtonProgress"
                         style="?android:attr/progressBarStyleSmall"
+                        android:indeterminateTint="@color/green_500"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
-
-                    <TextView
-                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:text="Giriş yapılıyor"
-                        android:textAlignment="center"/>
-                </LinearLayout>
+                        android:layout_gravity="center"/>
+
+                </FrameLayout>
+
 
                 <TextView
                     android:id="@+id/forgotPasswordTextView"

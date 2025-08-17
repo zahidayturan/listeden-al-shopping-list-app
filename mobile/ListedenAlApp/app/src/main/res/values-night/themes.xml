@@ -10,5 +10,7 @@
         <item name="android:statusBarColor">@color/black_700</item>
 
         <item name="android:colorBackground">@color/black_700</item>
+
+        <item name="colorAccent">@color/green_700</item>
     </style>
 </resources>
