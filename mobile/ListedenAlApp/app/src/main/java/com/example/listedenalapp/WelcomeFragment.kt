@@ -16,6 +16,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.listedenalapp.databinding.FragmentWelcomeBinding
 import com.example.listedenalapp.ui.login.LoginFragment
+import com.example.listedenalapp.ui.register.RegisterFragment
 
 class WelcomeFragment : Fragment() {
 

@@ -11,7 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import com.example.listedenalapp.AuthActivity
-import com.example.listedenalapp.RegisterFragment
+import com.example.listedenalapp.ui.register.RegisterFragment
 import com.example.listedenalapp.data.api.RetrofitClient
 import com.example.listedenalapp.data.repository.AuthRepository
 import com.example.listedenalapp.databinding.FragmentLoginBinding
