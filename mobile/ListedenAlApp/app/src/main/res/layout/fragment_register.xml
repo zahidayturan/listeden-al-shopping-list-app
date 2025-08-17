@@ -101,10 +101,23 @@
                     android:textColor="@color/design_default_color_error"
                     android:visibility="gone" />
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonRegister"
-                    style="@style/LoginRegisterButton"
-                    android:text="@string/create_account" />
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/buttonRegister"
+                        style="@style/LoginRegisterButton"
+                        android:text="@string/create_account" />
+
+                    <ProgressBar
+                        android:id="@+id/registerButtonProgress"
+                        style="?android:attr/progressBarStyleSmall"
+                        android:indeterminateTint="@color/green_500"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"/>
+                </FrameLayout>
 
                 <TextView
                     android:layout_width="wrap_content"

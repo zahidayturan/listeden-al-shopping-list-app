@@ -12,7 +12,6 @@ object RetrofitClient {
 
     private const val BASE_URL = "http://10.0.2.2:8080/"
 
-    // Lazy initialization ile Context'i aldıktan sonra başlatacağız
     @Volatile
     private var INSTANCE: ApiService? = null
 
@@ -25,19 +24,14 @@ object RetrofitClient {
     private fun buildClient(context: Context): ApiService {
         val authTokenManager = AuthTokenManager(context)
 
-        // Ağ isteklerini loglamak için Interceptor (debug modunda faydalı)
         val loggingInterceptor = HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY // İstek ve yanıt body'lerini logla
+            level = HttpLoggingInterceptor.Level.BODY
         }
 
-        // Token'ı her isteğe ekleyecek Interceptor
         val authInterceptor = Interceptor { chain ->
             val originalRequest = chain.request()
             val token = runCatching {
-                // Basit bir örnek için, token'ı her seferinde DataStore'dan okuyoruz.
-                // Ancak bu .first() çağrısı senkronize bir blokaj yaratır.
-                // Daha ileri düzey bir çözüm için RxJava veya daha karmaşık Coroutine yaklaşımları gerekir.
-                kotlinx.coroutines.runBlocking { // Geçici olarak Interceptor içinde blocking çağrı yapıyoruz
+                kotlinx.coroutines.runBlocking {
                     authTokenManager.getAuthToken()
                 }
 
@@ -53,13 +47,13 @@ object RetrofitClient {
         }
 
         val okHttpClient = OkHttpClient.Builder()
-            .addInterceptor(authInterceptor) // Token ekleyiciyi ekle
-            .addInterceptor(loggingInterceptor) // Loglayıcıyı ekle (debug için)
+            .addInterceptor(authInterceptor)
+            .addInterceptor(loggingInterceptor)
             .build()
 
         return Retrofit.Builder()
             .baseUrl(BASE_URL)
-            .client(okHttpClient) // OkHttpClient'i Retrofit'e ata
+            .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(ApiService::class.java)

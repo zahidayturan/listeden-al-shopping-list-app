@@ -3,13 +3,19 @@ package com.example.listedenalapp.ui.register
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.example.listedenalapp.AuthActivity
+import com.example.listedenalapp.data.api.RetrofitClient
+import com.example.listedenalapp.data.model.UserRegisterRequest
 import com.example.listedenalapp.databinding.FragmentRegisterBinding
 import com.example.listedenalapp.ui.login.LoginFragment
+import kotlinx.coroutines.launch
 
 class RegisterFragment : Fragment() {
 
@@ -111,14 +117,15 @@ class RegisterFragment : Fragment() {
 
         /*lifecycleScope.launch {
             try {
-                val request = UserRegisterRequest(username, email, password, "firstName", "lastName")
+                val request =
+                    UserRegisterRequest(username, email, password)
                 val response = RetrofitClient.getClient(requireContext()).registerUser(request)
 
                 if (response.isSuccessful) {
                     val authResponse = response.body()
                     authResponse?.let {
-                        Toast.makeText(context, "${it.message} Lütfen giriş yapın.", Toast.LENGTH_LONG).show()
-                        (activity as? MainActivity)?.loadFragment(LoginFragment())
+                        Toast.makeText(context, "Lütfen giriş yapın.", Toast.LENGTH_LONG).show()
+                        (activity as? AuthActivity)?.loadFragment(LoginFragment())
                     }
                 } else {
                     val errorBody = response.errorBody()?.string()
@@ -126,7 +133,7 @@ class RegisterFragment : Fragment() {
                     Log.e("RegisterFragment", "Kayıt hatası: ${response.code()} - ${errorBody}")
                 }
             } catch (e: Exception) {
-                Toast.makeText(context, "Bağlantı hatası: ${e.message}", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, "Bağlantı hatası", Toast.LENGTH_LONG).show()
                 Log.e("RegisterFragment", "API çağrısı sırasında hata oluştu: ${e.message}", e)
             }
         }*/

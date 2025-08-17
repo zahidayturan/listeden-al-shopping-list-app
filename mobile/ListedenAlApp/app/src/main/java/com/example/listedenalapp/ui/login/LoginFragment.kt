@@ -11,10 +11,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import com.example.listedenalapp.AuthActivity
-import com.example.listedenalapp.ui.register.RegisterFragment
 import com.example.listedenalapp.data.api.RetrofitClient
 import com.example.listedenalapp.data.repository.AuthRepository
 import com.example.listedenalapp.databinding.FragmentLoginBinding
+import com.example.listedenalapp.ui.register.RegisterFragment
 import com.example.listedenalapp.utils.AuthTokenManager
 
 class LoginFragment : Fragment() {
@@ -46,22 +46,27 @@ class LoginFragment : Fragment() {
         setupTextWatchers()
         updateButtonState()
 
-        loginViewModel.isLoading.observe(viewLifecycleOwner, Observer { isLoading ->
-            binding.buttonLogin.isEnabled = !isLoading
-            binding.textViewRegisterPrompt.isClickable = !isLoading
-            if (isLoading) {
-                binding.buttonLogin.alpha = 0.6f
-                binding.loginButtonProgress.visibility = View.VISIBLE
-            } else {
-                updateButtonState()
-                binding.loginButtonProgress.visibility = View.GONE
+        loginViewModel.loginResult.observe(viewLifecycleOwner, Observer { result ->
+            when (result) {
+                is NetworkResult.Loading -> {
+                    setLoadingState(true)
+                }
+                is NetworkResult.Success -> {
+                    setLoadingState(false)
+                    Toast.makeText(context, "Hoş geldiniz!", Toast.LENGTH_LONG).show()
+                    (activity as? AuthActivity)?.navigateToHome()
+                }
+                is NetworkResult.Error -> {
+                    setLoadingState(false)
+                    val errorMessage = result.message
+                    Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
+                }
             }
         })
 
         binding.buttonLogin.setOnClickListener {
             binding.editTextEmailLogin.error = null
             val email = binding.editTextEmailLogin.text.toString().trim()
-            val emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$".toRegex()
             val password = binding.editTextPasswordLogin.text.toString().trim()
 
             if (email.isEmpty()) {
@@ -70,6 +75,7 @@ class LoginFragment : Fragment() {
                 return@setOnClickListener
             }
 
+            val emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$".toRegex()
             if (!email.matches(emailRegex)) {
                 binding.editTextEmailLogin.error = "Lütfen geçerli bir e-posta adresi girin."
                 binding.editTextEmailLogin.requestFocus()
@@ -81,16 +87,23 @@ class LoginFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            loginViewModel.loginUser(email, password, onSuccess = {
-                Toast.makeText(context, it, Toast.LENGTH_LONG).show()
-                (activity as? AuthActivity)?.navigateToHome()
-            }, onError = {
-                Toast.makeText(context, it, Toast.LENGTH_LONG).show()
-            })
+            loginViewModel.loginUser(email, password)
         }
 
         binding.textViewRegisterPrompt.setOnClickListener {
             (activity as? AuthActivity)?.loadFragment(RegisterFragment())
+        }
+    }
+
+    private fun setLoadingState(isLoading: Boolean) {
+        binding.buttonLogin.isEnabled = !isLoading
+        binding.textViewRegisterPrompt.isClickable = !isLoading
+        if (isLoading) {
+            binding.buttonLogin.alpha = 0.6f
+            binding.loginButtonProgress.visibility = View.VISIBLE
+        } else {
+            updateButtonState()
+            binding.loginButtonProgress.visibility = View.GONE
         }
     }
 
@@ -108,10 +121,9 @@ class LoginFragment : Fragment() {
     }
 
     private fun updateButtonState() {
-        val username = binding.editTextEmailLogin.text.toString().trim()
+        val email = binding.editTextEmailLogin.text.toString().trim()
         val password = binding.editTextPasswordLogin.text.toString().trim()
-
-        val isFormValid = username.isNotEmpty() && password.isNotEmpty()
+        val isFormValid = email.isNotEmpty() && password.isNotEmpty()
         binding.buttonLogin.alpha = if (isFormValid) 1.0f else 0.6f
     }
 
