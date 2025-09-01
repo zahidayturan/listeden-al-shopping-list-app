@@ -92,7 +92,8 @@
                         android:indeterminateTint="@color/green_500"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"/>
+                        android:layout_gravity="center"
+                        android:visibility="gone"/>
                 </FrameLayout>
 
                 <TextView
@@ -138,12 +139,6 @@
                     android:text="Yardıma ihtiyacınız var mı?"
                     android:layout_marginVertical="12dp"
                     android:textColor="@color/green_700" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="ListedenAl App vBeta"
-                    android:textSize="12sp" />
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
