@@ -44,28 +44,38 @@ public class UserService {
     public User createUser(RegisterRequest newUser) {
 
         if (newUser.getPassword() == null || newUser.getPassword().isEmpty()) {
-            throw new IllegalArgumentException("Password cannot be empty or null in RegisterRequest.");
+            throw new IllegalArgumentException("Password cannot be empty or null");
+        }
+
+        if (!isValidEmail(newUser.getEmail())) {
+            throw new IllegalArgumentException("Invalid email format");
         }
 
         if (userRepository.existsByEmail(newUser.getEmail())) {
-            throw new IllegalArgumentException("Email already registered: " + newUser.getEmail());
+            throw new IllegalArgumentException("Kayıt işlemi sırasında bir hata oluştu");
         }
-
+        
         User user = new User();
         user.setUsername(newUser.getUsername());
         user.setEmail(newUser.getEmail());
-        user.setFirstName(newUser.getFirstName());
-        user.setLastName(newUser.getLastName());
-        user.setPasswordHash(passwordEncoder.encode(newUser.getPassword()));
+
+        String hashedPassword = passwordEncoder.encode(newUser.getPassword());
+        user.setPasswordHash(hashedPassword);
 
         User savedUser = userRepository.save(user);
 
+        // Varsayılan rol ataması
         Role userRole = roleRepository.findByName("ROLE_USER")
                 .orElseGet(() -> roleRepository.save(new Role("ROLE_USER")));
 
         UserRole newUserRole = new UserRole(savedUser, userRole);
         userRoleRepository.save(newUserRole);
         return savedUser;
+    }
+
+    private boolean isValidEmail(String email) {
+        String emailRegex = "^[A-Za-z0-9+_.-]+@(.+)$";
+        return email.matches(emailRegex);
     }
 
     @Transactional

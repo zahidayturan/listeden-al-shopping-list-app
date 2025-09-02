@@ -1,5 +1,6 @@
 package com.example.listedenalbackend.controller;
 
+import com.example.listedenalbackend.dto.LoginResponse;
 import com.example.listedenalbackend.model.User;
 import com.example.listedenalbackend.security.jwt.JwtTokenProvider;
 import com.example.listedenalbackend.service.UserService;
@@ -14,16 +15,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Tag(name = "Authentication", description = "User registration and login operations")
 @RestController
@@ -72,40 +67,26 @@ public class AuthController {
             description = "Authenticates a user with provided email and password and returns a JWT access token."
     )
     @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> authenticateUser(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<LoginResponse> loginUser(@RequestBody LoginRequest loginRequest) {
         String email = loginRequest.getEmail();
         String password = loginRequest.getPassword();
 
-        try {
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(email, password)
-            );
+        // Kullanıcı kimlik doğrulaması
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(email, password)
+        );
 
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+        // Authentication objesini güvenlik bağlamına ayarlama
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            String jwt = tokenProvider.generateToken(authentication);
+        // JWT Token oluşturma
+        String jwt = tokenProvider.generateToken(authentication);
 
-            Map<String, String> response = new HashMap<>();
-            response.put("accessToken", jwt);
-            response.put("tokenType", "Bearer");
-            response.put("email", email);
-
-            return ResponseEntity.ok(response);
-        } catch (AuthenticationException e) {
-            Map<String, String> errorResponse = new HashMap<>();
-            if (e instanceof BadCredentialsException) {
-                errorResponse.put("error", "invalid_credentials");
-            } else if (e instanceof UsernameNotFoundException) {
-                errorResponse.put("error", "user_not_found");
-            } else {
-                errorResponse.put("error", "authentication_failed");
-            }
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
-        } catch (Exception e) {
-            Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("error", "server_error");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
-        }
+        // Response objesi oluşturma ve set etme
+        LoginResponse response = new LoginResponse();
+        response.setAccessToken(jwt);
+        response.setEmail(email);
+        return ResponseEntity.ok(response);
     }
 
     @Operation(
