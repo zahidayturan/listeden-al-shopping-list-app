@@ -3,24 +3,35 @@ package com.example.listedenalapp.ui.register
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import com.example.listedenalapp.AuthActivity
 import com.example.listedenalapp.data.api.RetrofitClient
 import com.example.listedenalapp.data.model.UserRegisterRequest
+import com.example.listedenalapp.data.repository.AuthRepository
 import com.example.listedenalapp.databinding.FragmentRegisterBinding
 import com.example.listedenalapp.ui.login.LoginFragment
-import kotlinx.coroutines.launch
+import com.example.listedenalapp.utils.AuthTokenManager
 
 class RegisterFragment : Fragment() {
 
     private var _binding: FragmentRegisterBinding? = null
     private val binding get() = _binding!!
+
+    private lateinit var authTokenManager: AuthTokenManager
+    private val registerViewModel: RegisterViewModel by activityViewModels {
+        RegisterViewModelFactory(AuthRepository(RetrofitClient.getClient(requireContext())), authTokenManager)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        authTokenManager = AuthTokenManager(requireContext())
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,16 +47,34 @@ class RegisterFragment : Fragment() {
         setupTextWatchers()
         updateButtonState()
 
+        registerViewModel.registerResult.observe(viewLifecycleOwner, Observer { result ->
+            when (result) {
+                is NetworkResult.Loading -> {
+                    setLoadingState(true)
+                }
+                is NetworkResult.Success -> {
+                    setLoadingState(false)
+                    Toast.makeText(context, "Kayıt başarılı! Hoş geldiniz!", Toast.LENGTH_LONG).show()
+                    (activity as? AuthActivity)?.navigateToHome()
+                }
+                is NetworkResult.Error -> {
+                    setLoadingState(false)
+                    val errorMessage = result.message
+                    Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
+                }
+            }
+        })
+
         binding.buttonRegister.setOnClickListener {
             val username = binding.editTextUsernameRegister.text.toString().trim()
             val email = binding.editTextEmailRegister.text.toString().trim()
-            val emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$".toRegex()
             val password = binding.editTextPasswordRegister.text.toString().trim()
-            val errorMessage = when {
-                password.isEmpty() -> "Şifre alanı boş bırakılamaz."
-                password.length < 8 -> "Şifre en az 8 karakter olmalıdır."
-                !password.any { it.isDigit() } -> "Şifre en az bir rakam içermelidir."
-                else -> null
+
+            // Input validation
+            if (username.isEmpty() || username.length < 3) {
+                binding.editTextUsernameRegister.error = "Kullanıcı adı en az 3 karakter olmalı"
+                binding.editTextUsernameRegister.requestFocus()
+                return@setOnClickListener
             }
 
             if (email.isEmpty()) {
@@ -54,39 +83,38 @@ class RegisterFragment : Fragment() {
                 return@setOnClickListener
             }
 
+            val emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$".toRegex()
             if (!email.matches(emailRegex)) {
                 binding.editTextEmailRegister.error = "Lütfen geçerli bir e-posta adresi girin."
                 binding.editTextEmailRegister.requestFocus()
                 return@setOnClickListener
             }
 
-            if (username.isEmpty() || username.length < 3) {
-                binding.editTextUsernameRegister.error = "Kullanıcı adı en az 3 karakter olmalı"
-                binding.editTextUsernameRegister.requestFocus()
-                return@setOnClickListener
-            }
-
-            if (errorMessage != null) {
-                binding.textViewPasswordError.text = errorMessage
-                binding.textViewPasswordError.visibility = View.VISIBLE
+            if (password.isEmpty() || password.length < 8) {
+                binding.editTextPasswordRegister.error = "Şifre en az 8 karakter olmalı"
                 binding.editTextPasswordRegister.requestFocus()
                 return@setOnClickListener
-            } else {
-                binding.textViewPasswordError.visibility = View.GONE
             }
 
-            apiRegister(username, email, password)
+            // Submit form for registration
+            val userRegisterRequest = UserRegisterRequest(username, email, password)
+            registerViewModel.registerUser(userRegisterRequest)
         }
 
         binding.textViewLoginPrompt.setOnClickListener {
-            // Giriş sayfasına git
             (activity as? AuthActivity)?.loadFragment(LoginFragment())
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+    private fun setLoadingState(isLoading: Boolean) {
+        binding.buttonRegister.isEnabled = !isLoading
+        if (isLoading) {
+            binding.buttonRegister.alpha = 0.6f
+            binding.registerButtonProgress.visibility = View.VISIBLE
+        } else {
+            updateButtonState()
+            binding.registerButtonProgress.visibility = View.GONE
+        }
     }
 
     private fun setupTextWatchers() {
@@ -104,38 +132,16 @@ class RegisterFragment : Fragment() {
     }
 
     private fun updateButtonState() {
-        val email = binding.editTextEmailRegister.text.toString().trim()
         val username = binding.editTextUsernameRegister.text.toString().trim()
+        val email = binding.editTextEmailRegister.text.toString().trim()
         val password = binding.editTextPasswordRegister.text.toString().trim()
 
-        val isFormValid = username.isNotEmpty() && password.isNotEmpty() && email.isNotEmpty()
+        val isFormValid = username.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty()
         binding.buttonRegister.alpha = if (isFormValid) 1.0f else 0.6f
     }
 
-    private fun apiRegister(username: String, email: String, password: String) {
-        (activity as? AuthActivity)?.navigateToHome()
-
-        /*lifecycleScope.launch {
-            try {
-                val request =
-                    UserRegisterRequest(username, email, password)
-                val response = RetrofitClient.getClient(requireContext()).registerUser(request)
-
-                if (response.isSuccessful) {
-                    val authResponse = response.body()
-                    authResponse?.let {
-                        Toast.makeText(context, "Lütfen giriş yapın.", Toast.LENGTH_LONG).show()
-                        (activity as? AuthActivity)?.loadFragment(LoginFragment())
-                    }
-                } else {
-                    val errorBody = response.errorBody()?.string()
-                    Toast.makeText(context, "Kayıt başarısız: ${errorBody ?: "Bilinmeyen hata"}", Toast.LENGTH_LONG).show()
-                    Log.e("RegisterFragment", "Kayıt hatası: ${response.code()} - ${errorBody}")
-                }
-            } catch (e: Exception) {
-                Toast.makeText(context, "Bağlantı hatası", Toast.LENGTH_LONG).show()
-                Log.e("RegisterFragment", "API çağrısı sırasında hata oluştu: ${e.message}", e)
-            }
-        }*/
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

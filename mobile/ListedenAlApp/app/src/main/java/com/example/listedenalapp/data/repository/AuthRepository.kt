@@ -4,6 +4,7 @@ import NetworkResult
 import com.example.listedenalapp.data.api.ApiService
 import com.example.listedenalapp.data.model.AuthResponse
 import com.example.listedenalapp.data.model.UserLoginRequest
+import com.example.listedenalapp.data.model.UserRegisterRequest
 import retrofit2.HttpException
 import retrofit2.Response
 
@@ -29,5 +30,9 @@ class AuthRepository(private val apiService: ApiService) {
 
     suspend fun loginUser(request: UserLoginRequest): NetworkResult<AuthResponse> {
         return safeApiCall { apiService.loginUser(request) }
+    }
+
+    suspend fun registerUser(request: UserRegisterRequest): NetworkResult<AuthResponse> {
+        return safeApiCall { apiService.registerUser(request) }
     }
 }
