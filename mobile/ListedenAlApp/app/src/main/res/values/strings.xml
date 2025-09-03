@@ -14,7 +14,8 @@
     <string name="login">Giriş Yap</string>
     <string name="title_activity_splash">SplashActivity</string>
     <string name="title_activity_auth">AuthActivity</string>
-
+    
+    <string name="hello">Merhaba</string>"
 
 
     <string name="error_invalid_credentials">Yanlış e-posta veya şifre.</string>
