@@ -27,16 +27,19 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        // Kullanıcıyı e-posta adresiyle buluyoruz
         User user = userRepository.findByEmail(email)
-                        .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
 
+        // Kullanıcının rollerini alıyoruz
         Collection<SimpleGrantedAuthority> authorities = user.getUserRoles().stream()
                 .map(UserRole::getRole)
                 .map(role -> new SimpleGrantedAuthority(role.getName()))
                 .collect(Collectors.toList());
 
+        // Burada, kullanıcı adı yerine e-posta kullanarak `UserDetails` döndürüyoruz.
         return new org.springframework.security.core.userdetails.User(
-                user.getUsername(),
+                user.getEmail(),
                 user.getPasswordHash(),
                 authorities
         );
