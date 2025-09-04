@@ -21,7 +21,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final UserRoleRepository userRoleRepository;
-    private final PasswordEncoder passwordEncoder; // Security config'inizde tanımlanmalı
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
     public UserService(UserRepository userRepository, RoleRepository roleRepository,
@@ -47,6 +47,10 @@ public class UserService {
             throw new IllegalArgumentException("Password cannot be empty or null");
         }
 
+        if (newUser.getPassword().length() < 8) {
+            throw new IllegalArgumentException("Password must be at least 8 characters long.");
+        }
+
         if (!isValidEmail(newUser.getEmail())) {
             throw new IllegalArgumentException("Invalid email format");
         }
@@ -54,7 +58,7 @@ public class UserService {
         if (userRepository.existsByEmail(newUser.getEmail())) {
             throw new IllegalArgumentException("Kayıt işlemi sırasında bir hata oluştu");
         }
-        
+
         User user = new User();
         user.setUsername(newUser.getUsername());
         user.setEmail(newUser.getEmail());
@@ -64,14 +68,15 @@ public class UserService {
 
         User savedUser = userRepository.save(user);
 
-        // Varsayılan rol ataması
         Role userRole = roleRepository.findByName("ROLE_USER")
                 .orElseGet(() -> roleRepository.save(new Role("ROLE_USER")));
 
         UserRole newUserRole = new UserRole(savedUser, userRole);
         userRoleRepository.save(newUserRole);
+
         return savedUser;
     }
+
 
     private boolean isValidEmail(String email) {
         String emailRegex = "^[A-Za-z0-9+_.-]+@(.+)$";
@@ -81,7 +86,7 @@ public class UserService {
     @Transactional
     public User updateUser(Long id, User userDetails) {
         return userRepository.findById(id).map(existingUser -> {
-            // Sadece güncellenebilecek alanları ayarla
+
             if (userDetails.getUsername() != null && !userDetails.getUsername().equals(existingUser.getUsername())) {
                 existingUser.setUsername(userDetails.getUsername());
             }
@@ -97,11 +102,18 @@ public class UserService {
             if (userDetails.getLastName() != null) {
                 existingUser.setLastName(userDetails.getLastName());
             }
-            // Şifre güncellenmesi ayrı bir metotla yapılmalı veya burada hashlenmeli
-            // existingUser.setPasswordHash(userDetails.getPasswordHash()); // Eğer yeni şifre verilirse hashlenmeli
-            existingUser.setUpdatedAt(LocalDateTime.now());
 
+            // getPasswordHash == getPassword for data packet
+            if (userDetails.getPasswordHash() != null && userDetails.getPasswordHash().length() >= 8) {
+                String hashedPassword = passwordEncoder.encode(userDetails.getPasswordHash());
+                existingUser.setPasswordHash(hashedPassword);
+            } else if (userDetails.getPasswordHash() != null) {
+                throw new IllegalArgumentException("Password must be at least 8 characters long.");
+            }
+
+            existingUser.setUpdatedAt(LocalDateTime.now());
             return userRepository.save(existingUser);
+
         }).orElseThrow(() -> new IllegalArgumentException("User not found with id: " + id));
     }
 
@@ -109,11 +121,6 @@ public class UserService {
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
     }
-
-    public Optional<User> findByUsername(String username) {
-        return userRepository.findByUsername(username);
-    }
-
     public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
