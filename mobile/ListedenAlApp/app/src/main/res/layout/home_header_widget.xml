@@ -64,7 +64,5 @@
             android:background="@drawable/round_icon_button_background"
             android:padding="12dp" />
 
-
-
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

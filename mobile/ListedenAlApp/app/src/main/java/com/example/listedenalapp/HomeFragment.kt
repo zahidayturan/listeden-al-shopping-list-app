@@ -4,8 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
+
 import androidx.fragment.app.Fragment
-import com.example.listedenalapp.databinding.FragmentHomeBinding // View Binding için
+import com.example.listedenalapp.databinding.FragmentHomeBinding
 
 class HomeFragment : Fragment() {
 
@@ -22,9 +24,13 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // Burada Ana Sayfa içeriği ile ilgili kodlar olacak
-        binding.homeTextView.text = "Ana Sayfa"
+        val notificationsButton: ImageButton = view.findViewById(R.id.openNotificationsButton)
+
+        notificationsButton.setOnClickListener {
+            println("Bildirimlere tıklandı!")
+        }
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

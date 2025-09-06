@@ -22,8 +22,6 @@ class ListsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // Burada Listelerim sayfası içeriği ile ilgili kodlar olacak
-        binding.listsTextView.text = "Listelerim Fragment"
     }
 
     override fun onDestroyView() {

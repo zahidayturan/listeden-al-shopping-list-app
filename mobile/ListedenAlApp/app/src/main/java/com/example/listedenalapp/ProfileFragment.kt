@@ -29,7 +29,6 @@ class ProfileFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         authTokenManager = AuthTokenManager(requireContext())
-        binding.profileTextView.text = "Merhaba! Burası Profiliniz."
 
         binding.buttonLogout.setOnClickListener {
             logout()
