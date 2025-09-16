@@ -8,7 +8,6 @@
     tools:context=".MainActivity"
     android:fitsSystemWindows="true">
 
-
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="0dp"
@@ -28,6 +27,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:background="?android:attr/windowBackground"
         app:itemTextColor="@color/bottom_nav_item_color"
-        app:itemIconTint="@color/bottom_nav_item_color"/>
+        app:itemIconTint="@color/bottom_nav_item_color"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
